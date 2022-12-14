@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.shen.experiment_store.mapper.UserMapper">
+    <resultMap id="UserEntityMap" type="com.shen.experiment_store.entity.User">
+        <id column="uid" property="uid"/>
+        <result column="is_delete" property="isDelete"/>
+        <result column="created_user" property="createdUser"/>
+        <result column="created_time" property="createdTime"/>
+        <result column="modified_user" property="modifiedUser"/>
+        <result column="modified_time" property="modifiedTime"/>
+    </resultMap>
+
+    <!-- 插入用户数据：Integer insert(User user) -->
+    <insert id="insert" useGeneratedKeys="true" keyProperty="uid">
+        INSERT INTO t_user (username, password, salt, phone, email, gender, avatar, is_delete, created_user,
+                            created_time, modified_user, modified_time)
+        VALUES (#{username}, #{password}, #{salt}, #{phone}, #{email}, #{gender}, #{avatar}, #{isDelete},
+                #{createdUser}, #{createdTime}, #{modifiedUser}, #{modifiedTime})
+    </insert>
+
+    <!--根据uid修改用户密码-->
+    <update id="updatePasswordByUid">
+        update t_user
+        set password=#{password},
+            modified_user=#{modifiedUser},
+            modified_time=#{modifiedTime}
+        where uid = #{uid}
+    </update>
+
+    <!-- 根据uid更新用户个人资料：Integer updateInfoByUid(User user) -->
+    <update id="updateInfoByUid">
+        UPDATE
+        t_user
+        SET
+        <if test="phone != null">phone = #{phone},</if>
+        <if test="email != null">email = #{email},</if>
+        <if test="gender != null">gender = #{gender},</if>
+        modified_user = #{modifiedUser},
+        modified_time = #{modifiedTime}
+        WHERE
+        uid = #{uid}
+    </update>
+
+    <!-- 根据用户名查询用户数据：User findByUsername(String username) -->
+    <select id="findByUsername" resultMap="UserEntityMap">
+        SELECT *
+        FROM t_user
+        WHERE username = #{username}
+    </select>
+
+    <!-- 根据用户id查询用户数据：User findByUid(Integer uid) -->
+    <select id="findByUid" resultMap="UserEntityMap">
+        SELECT *
+        FROM t_user
+        WHERE uid = #{uid}
+    </select>
+
+    <!--根据用户id修改头像-->
+    <update id="updateAvatarByUid">
+        UPDATE
+            t_user
+        SET avatar        = #{avatar},
+            modified_user = #{modifiedUser},
+            modified_time = #{modifiedTime}
+        WHERE uid = #{uid}
+    </update>
+</mapper>
